@@ -1,14 +1,21 @@
 import { describe, expect, it } from 'vitest'
-import { formatQuizTime, QUIZ_DURATION_SECONDS, remainingQuizSeconds } from './quizTimer'
+import { durationForMode, formatQuizTime, remainingQuizSeconds } from './quizTimer'
 
 describe('quiz timer', () => {
-  it('starts at ten minutes and counts down from the saved start time', () => {
-    expect(remainingQuizSeconds(1_000, 1_000)).toBe(QUIZ_DURATION_SECONDS)
-    expect(remainingQuizSeconds(1_000, 31_000)).toBe(570)
+  it('uses the server deadline instead of a client-created timer', () => {
+    expect(remainingQuizSeconds(601_000, 1_000)).toBe(600)
+    expect(remainingQuizSeconds(601_000, 31_000)).toBe(570)
   })
 
   it('does not go below zero after the time is up', () => {
     expect(remainingQuizSeconds(1_000, 1_000 + 20 * 60_000)).toBe(0)
+  })
+
+  it('times exams and leaves practice modes untimed', () => {
+    expect(durationForMode('topic_practice')).toBeNull()
+    expect(durationForMode('subject_quiz')).toBeNull()
+    expect(durationForMode('subject_exam')).toBe(3600)
+    expect(durationForMode('general_exam')).toBe(7200)
   })
 
   it('formats remaining time for display', () => {

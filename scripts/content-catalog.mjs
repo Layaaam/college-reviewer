@@ -1,0 +1,92 @@
+export const authoritativeSources = {
+  upcat: { key: 'upcat-official', title: 'UPCAT official site', url: 'https://upcat.up.edu.ph/', kind: 'authoritative-reference' },
+  ustet: { key: 'ustet-official', title: 'USTET official site', url: 'https://ustet.ust.edu.ph/', kind: 'authoritative-reference' },
+  deped: { key: 'deped-shs', title: 'DepEd Strengthened Senior High School Program', url: 'https://www.deped.gov.ph/strengthened-shs-program/', kind: 'authoritative-reference' },
+}
+
+const subject = (name, slug, description, sortOrder, topics) => ({ name, slug, description, sortOrder, topics })
+const topic = (slug, title, summary, rule, example, sourceKeys = ['deped', 'upcat', 'ustet']) => ({ slug, title, summary, rule, example, sourceKeys })
+
+export const catalog = [
+  subject('Mathematics', 'mathematics', 'Number sense, algebra, geometry, data, and applied problem solving.', 1, [
+    topic('number-sense', 'Number Sense', 'Classify, compare, and represent real numbers.', 'Use place value and number properties before computing.', 'Since 0.45 = 45/100, it is rational.'),
+    topic('arithmetic-operations', 'Arithmetic Operations', 'Apply operations accurately to integers, fractions, and decimals.', 'Follow grouping symbols, exponents, multiplication or division, then addition or subtraction.', '18 - 3(4) = 6.'),
+    topic('ratios-percentages', 'Ratios, Proportions, and Percentages', 'Model part-to-part and part-to-whole relationships.', 'A percent is a ratio with denominator 100.', '15% of 240 is 0.15 × 240 = 36.'),
+    topic('linear-algebra', 'Linear Equations and Inequalities', 'Solve and interpret one-variable linear relationships.', 'Perform the same valid operation on both sides.', '3x + 5 = 20 gives x = 5.'),
+    topic('polynomials', 'Polynomials and Quadratics', 'Operate on polynomials and solve basic quadratic equations.', 'For ab = 0, either a = 0 or b = 0.', 'x² - 5x + 6 = (x - 2)(x - 3).'),
+    topic('functions', 'Functions and Graphs', 'Read function notation, tables, and graphs.', 'A function assigns each input exactly one output.', 'If f(x)=2x+1, then f(3)=7.'),
+    topic('plane-geometry', 'Plane Geometry', 'Use angle, perimeter, area, and similarity relationships.', 'Match the formula to the figure and keep units consistent.', 'A 3-by-4 rectangle has area 12 square units.'),
+    topic('coordinate-geometry', 'Coordinate Geometry', 'Use slope, distance, midpoint, and line equations.', 'Slope is change in y divided by change in x.', 'Between (1,2) and (3,6), slope = 4/2 = 2.'),
+    topic('trigonometry', 'Right-Triangle Trigonometry', 'Relate angles and side lengths in right triangles.', 'SOH-CAH-TOA links sine, cosine, and tangent to side ratios.', 'For opposite 3 and hypotenuse 5, sin θ = 3/5.'),
+    topic('sequences', 'Sequences and Series', 'Recognize arithmetic and geometric patterns.', 'Arithmetic sequences have a common difference; geometric sequences have a common ratio.', '2, 5, 8, … has common difference 3.'),
+    topic('statistics', 'Statistics and Data Interpretation', 'Summarize and interpret data displays.', 'The mean is sensitive to extreme values; the median is more resistant.', 'The median of 2, 4, 9 is 4.'),
+    topic('probability', 'Probability and Applied Problems', 'Count outcomes and model practical multi-step situations.', 'Probability is favorable outcomes divided by all equally likely outcomes.', 'A fair die has probability 1/6 of showing 4.'),
+  ]),
+  subject('Science', 'science', 'Biology, chemistry, physics, Earth science, environment, and scientific reasoning.', 2, [
+    topic('cells', 'Cells and Organelles', 'Connect cell structures with their functions.', 'Structure supports function at every biological level.', 'Mitochondria release usable energy through cellular respiration.'),
+    topic('genetics', 'Genetics and Heredity', 'Use genes, chromosomes, and inheritance patterns.', 'Alleles are alternative forms of a gene.', 'A Punnett square models possible offspring genotypes.'),
+    topic('evolution-ecology', 'Evolution and Ecology', 'Explain adaptation, natural selection, and ecosystem relationships.', 'Populations evolve; individual organisms do not evolve during a lifetime.', 'A helpful inherited trait can become more common over generations.'),
+    topic('human-biology', 'Human Body Systems', 'Relate organ systems to homeostasis.', 'Body systems interact rather than operate in isolation.', 'The respiratory and circulatory systems exchange and transport gases.'),
+    topic('matter', 'Matter and Atomic Structure', 'Classify matter and describe atoms and ions.', 'Atomic number equals the number of protons.', 'An atom with 8 protons is oxygen.'),
+    topic('chemical-reactions', 'Chemical Reactions and Solutions', 'Interpret equations, bonding, acids, bases, and solutions.', 'Balanced equations conserve each type of atom.', 'Two H₂ molecules and one O₂ molecule form two H₂O molecules.'),
+    topic('motion-forces', 'Motion and Forces', 'Analyze displacement, velocity, acceleration, and forces.', 'Net force causes acceleration.', 'With zero net force, motion stays constant.'),
+    topic('energy-waves', 'Energy, Work, and Waves', 'Relate work, power, energy, sound, and light.', 'Energy changes form but is conserved in a closed system.', 'A raised object stores gravitational potential energy.'),
+    topic('electricity', 'Electricity and Magnetism', 'Use basic circuit and field relationships.', 'In a series circuit, the same current passes through every component.', 'Voltage equals current times resistance.'),
+    topic('earth-systems', 'Earth Systems and Geology', 'Connect rocks, plate motion, weather, and climate.', 'Weather is short-term; climate is a long-term pattern.', 'Plate boundaries are common sites of earthquakes.'),
+    topic('astronomy', 'Astronomy and Space Science', 'Explain motions and structures in the solar system and universe.', 'Gravity governs orbits.', 'Earth’s rotation produces day and night.'),
+    topic('environment-science', 'Environmental Science and Investigation', 'Evaluate ecosystems, resources, hazards, and experimental evidence.', 'A fair test changes one independent variable while controlling others.', 'Repeated trials improve reliability.'),
+  ]),
+  subject('English Language', 'english-language', 'Grammar, vocabulary, usage, and verbal reasoning.', 3, [
+    topic('subject-verb-agreement', 'Subject–Verb Agreement', 'Match the verb with the true grammatical subject.', 'Ignore interrupting phrases when identifying the subject.', 'The list of names is on the desk.'),
+    topic('pronouns', 'Pronouns and Agreement', 'Use clear antecedents and consistent pronoun case.', 'A pronoun must agree with and clearly refer to its antecedent.', 'Maria and I submitted our work.'),
+    topic('verb-tense', 'Verb Tense and Voice', 'Maintain logical tense and choose active or passive voice purposefully.', 'Keep time relationships consistent.', 'By noon, she had finished the test.'),
+    topic('modifiers-parallelism', 'Modifiers and Parallelism', 'Place modifiers clearly and balance coordinated structures.', 'Items in a series should share grammatical form.', 'She likes reading, writing, and debating.'),
+    topic('sentence-structure', 'Sentence Structure and Punctuation', 'Correct fragments, run-ons, and punctuation errors.', 'Join independent clauses with appropriate punctuation or a conjunction.', 'The rain stopped; the match resumed.'),
+    topic('vocabulary-context', 'Vocabulary in Context', 'Infer word meaning from context and word parts.', 'Use both the immediate sentence and the passage’s overall meaning.', 'In “a concise answer,” concise means brief.'),
+    topic('idioms-usage', 'Idioms and Standard Usage', 'Recognize conventional formal-English expressions.', 'Prefer standard usage in academic contexts.', 'She is capable of solving the problem.'),
+    topic('analogies', 'Word Relationships and Analogies', 'Identify relationships among words.', 'State the first relationship before testing choices.', 'Bird is to nest as bee is to hive.'),
+    topic('sentence-correction', 'Sentence Correction and Clarity', 'Revise sentences for correctness, precision, and economy.', 'A revision should preserve meaning while removing error or ambiguity.', '“Because it rained, classes ended early” has a clear cause.'),
+  ]),
+  subject('Filipino Language', 'filipino-language', 'Balarila, talasalitaan, wastong gamit, at pangangatwiran sa Filipino.', 4, [
+    topic('bahagi-ng-pananalita', 'Bahagi ng Pananalita', 'Kilalanin ang gamit ng pangngalan, pandiwa, pang-uri, at iba pa.', 'Tukuyin ang tungkulin ng salita sa mismong pangungusap.', 'Sa “masipag na mag-aaral,” pang-uri ang “masipag.”'),
+    topic('pandiwa-aspekto', 'Pandiwa at Aspekto', 'Tukuyin ang kilos at panahong ipinahihiwatig nito.', 'Ang aspekto ay maaaring perpektibo, imperpektibo, o kontemplatibo.', '“Nag-aral” ay kilos na natapos na.'),
+    topic('panghalip-pang-ugnay', 'Panghalip at Pang-ugnay', 'Gamitin nang malinaw ang panghalip at mga salitang nag-uugnay.', 'Dapat malinaw ang tinutukoy ng panghalip.', 'Nag-aral siya kaya pumasa siya.'),
+    topic('wastong-gamit', 'Wastong Gamit ng Salita', 'Piliin ang angkop na anyo at salita ayon sa diwa.', 'Isaalang-alang ang kahulugan at estruktura, hindi tunog lamang.', 'Ginagamit ang “nang” sa “tumakbo nang mabilis.”'),
+    topic('kayarian-pangungusap', 'Kayarian ng Pangungusap', 'Suriin ang payak, tambalan, hugnayan, at langkapan.', 'Bilangin ang sugnay na makapag-iisa at di-makapag-iisa.', '“Umalis siya dahil umulan” ay hugnayan.'),
+    topic('bantas', 'Bantas at Kapitalisasyon', 'Gamitin ang bantas upang luminaw ang diwa.', 'Ang kuwit at tuldok ay may tiyak na tungkulin sa ayos ng ideya.', 'May kuwit pagkatapos ng panimulang parirala.'),
+    topic('talasalitaan', 'Talasalitaan sa Konteksto', 'Hinuhaing mabuti ang kahulugan batay sa gamit.', 'Basahin ang mga pahiwatig bago at pagkatapos ng salita.', 'Ang “masinop” ay maingat at matipid sa paggamit.'),
+    topic('idyoma-tayutay', 'Idyoma at Tayutay', 'Unawain ang di-tuwiran at masining na pahayag.', 'Huwag laging literal ang pagbasa sa idyoma.', 'Ang “bukas-palad” ay matulungin o mapagbigay.'),
+    topic('pagwawasto', 'Pagwawasto at Lohikal na Ayos', 'Ayusin ang pangungusap para sa linaw at kawastuhan.', 'Panatilihin ang lohikal na ugnayan ng mga ideya.', 'Unahin ang sanhi bago ang malinaw na bunga kapag kailangan.'),
+  ]),
+  subject('Reading Comprehension', 'reading-comprehension', 'Original English and Filipino passages, evidence, inference, and synthesis.', 5, [
+    topic('main-idea', 'Main Idea and Summary', 'Identify the central claim without overgeneralizing.', 'A good summary includes the core idea and omits minor detail.', 'Repeated support for urban trees points to their overall community value.'),
+    topic('supporting-evidence', 'Supporting Evidence', 'Select details that directly support a claim.', 'Strong evidence is relevant and sufficient.', 'A measured temperature drop supports a claim about shade.'),
+    topic('inference', 'Inference', 'Combine textual clues with sound reasoning.', 'An inference must be supported, not merely possible.', 'An empty station and a posted closure imply service has stopped.'),
+    topic('tone', 'Tone and Attitude', 'Infer the writer’s attitude from diction and detail.', 'Tone labels should match the whole selection.', 'Words such as “fortunately” can signal approval.'),
+    topic('purpose-audience', 'Purpose and Audience', 'Determine why and for whom a text was written.', 'Purpose is revealed by content, form, and requested action.', 'Instructions for applicants target prospective students.'),
+    topic('structure', 'Text Structure', 'Recognize comparison, cause-effect, sequence, and problem-solution.', 'Signal words reveal relationships among ideas.', '“Because” and “therefore” often mark cause and effect.'),
+    topic('context-clues', 'Context Clues', 'Infer unfamiliar words from definitions, contrasts, and examples.', 'Replace the inferred meaning in the sentence to test it.', 'A contrast after “but” can reverse the expected meaning.'),
+    topic('synthesis', 'Synthesis Across Texts', 'Combine compatible claims and note disagreement.', 'A synthesis preserves each source’s actual position.', 'Two studies may agree on an effect but differ on its cause.'),
+    topic('visual-information', 'Visual and Quantitative Information', 'Read tables, charts, captions, and text together.', 'Check units, labels, scale, and comparison basis.', 'A taller bar indicates more only if the scale is consistent.'),
+  ]),
+  subject('Mental and Logical Reasoning', 'mental-logical-reasoning', 'Patterns, arguments, logic, spatial relationships, and data sufficiency.', 6, [
+    topic('classification', 'Classification and Odd-One-Out', 'Group items by a consistent defining property.', 'Name the rule that includes all but one item.', 'Triangle, square, and pentagon are polygons; circle is not.'),
+    topic('number-series', 'Number Series', 'Detect arithmetic, geometric, and alternating rules.', 'Test simple differences and ratios before complex patterns.', '3, 6, 9, 12 increases by 3.'),
+    topic('letter-series', 'Letter and Symbol Series', 'Track positions, cycles, and alternating symbol rules.', 'Convert letters to alphabet positions when useful.', 'A, C, E advances two letters each time.'),
+    topic('abstract-patterns', 'Abstract Patterns', 'Identify changes in shape, count, orientation, and shading.', 'Track one visual feature at a time.', 'A quarter-turn pattern rotates 90° per step.'),
+    topic('spatial-reasoning', 'Spatial Relationships', 'Reason about rotations, reflections, folds, and views.', 'A rotation preserves shape and size; a reflection reverses orientation.', 'A mirror image swaps left and right.'),
+    topic('logical-analogies', 'Logical Analogies', 'Transfer a precise relationship to a new pair.', 'The relationship must work in the same direction.', 'Puppy is to dog as kitten is to cat.'),
+    topic('syllogisms', 'Syllogisms and Deductions', 'Decide what must follow from stated premises.', 'Do not add facts that the premises do not supply.', 'All A are B and x is A, so x is B.'),
+    topic('arguments', 'Assumptions and Arguments', 'Identify hidden premises and evaluate evidence.', 'A necessary assumption must hold for the conclusion to follow.', 'A recommendation needs evidence tied to its predicted outcome.'),
+    topic('data-sufficiency', 'Data Sufficiency', 'Judge whether given statements answer a question.', 'Test each statement alone before combining them.', 'An equation may be insufficient if it has two unknowns.'),
+  ]),
+]
+
+export const allTopics = catalog.flatMap((entry) => entry.topics.map((item, index) => ({
+  ...item,
+  subject: entry.name,
+  subjectSlug: entry.slug,
+  subjectSortOrder: entry.sortOrder,
+  sortOrder: index + 1,
+  language: entry.slug === 'filipino-language' ? 'fil' : 'eng',
+})))

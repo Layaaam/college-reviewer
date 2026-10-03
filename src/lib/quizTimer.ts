@@ -1,8 +1,9 @@
-export const QUIZ_DURATION_SECONDS = 10 * 60
+import type { QuizMode } from '@/types'
 
-export function remainingQuizSeconds(startedAt: number, now: number): number {
-  const elapsed = Math.max(0, Math.floor((now - startedAt) / 1000))
-  return Math.max(0, QUIZ_DURATION_SECONDS - elapsed)
+export const durationForMode = (mode: QuizMode): number | null => mode === 'subject_exam' ? 60 * 60 : mode === 'general_exam' ? 120 * 60 : null
+
+export function remainingQuizSeconds(deadline: number, now: number): number {
+  return Math.max(0, Math.ceil((deadline - now) / 1000))
 }
 
 export function formatQuizTime(seconds: number): string {

@@ -1,9 +1,9 @@
 import { supabase } from '@/lib/supabase'
-import type { Lesson, Profile, Question, QuestionChoice, QuizAnswer, QuizAttempt, QuizResult, StudentProgress, Subject } from '@/types'
+import type { Lesson, PracticeFeedback, Profile, QuizAnswer, QuizAttempt, QuizMode, QuizResult, QuizSession, StudentProgress, StudentTopicProgress, Subject, Topic } from '@/types'
 
 const icons: Record<string, string> = {
-  mathematics: '∑', english: 'Aa', science: '⚗',
-  'reading-comprehension': '▤', 'general-knowledge': '✦',
+  mathematics: '∑', 'english-language': 'Aa', science: '⚗', 'filipino-language': 'W',
+  'reading-comprehension': '▤', 'mental-logical-reasoning': '◇',
 }
 
 function client() {
@@ -21,11 +21,13 @@ function decorateSubject(row: Omit<Subject, 'icon' | 'color'>): Subject {
   return { ...row, icon: icons[row.slug] ?? '✦', color: row.sort_order % 2 ? '#E8F3ED' : '#F0F4F1' }
 }
 
-function parseLesson(row: { id: string; subject_id: string; title: string; content: string; sort_order: number }): Lesson {
+type LessonRow = { id: string; subject_id: string; topic_id?: string; title: string; content: string; rule?: string; example?: string; sort_order: number; overview?: string; objectives?: string[]; concept_sections?: Lesson['concept_sections']; method_steps?: string[]; worked_examples?: Lesson['worked_examples']; common_mistakes?: string[]; exam_tips?: string[]; quick_checks?: Lesson['quick_checks']; source_links?: Lesson['source_links']; estimated_minutes?: number }
+
+function parseLesson(row: LessonRow): Lesson {
   const [, summary = row.content, rule = '', example = ''] = row.content.match(
     /Concept summary:\s*(.*?)\s*Important rule:\s*(.*?)\s*Worked example:\s*(.*)/s,
   ) ?? []
-  return { ...row, content: summary, rule, example }
+  return { ...row, content: summary, rule: row.rule || rule, example: row.example || example, overview: row.overview || summary, objectives: row.objectives ?? [], concept_sections: row.concept_sections ?? [], method_steps: row.method_steps ?? [], worked_examples: row.worked_examples ?? [], common_mistakes: row.common_mistakes ?? [], exam_tips: row.exam_tips ?? [], quick_checks: row.quick_checks ?? [], source_links: row.source_links ?? [], estimated_minutes: row.estimated_minutes ?? 15 }
 }
 
 export async function getCurrentProfile(): Promise<Profile> {
@@ -36,46 +38,53 @@ export async function getCurrentProfile(): Promise<Profile> {
 }
 
 export async function getSubjects(): Promise<Subject[]> {
-  const rows = check(await client().from('subjects').select('id,name,slug,description,sort_order').order('sort_order'))
+  const rows = check(await client().from('subjects').select('id,name,slug,description,sort_order').eq('is_active', true).order('sort_order'))
   return rows.map((row) => decorateSubject(row))
 }
 
 export async function getSubjectBySlug(slug: string): Promise<Subject> {
-  const row = check(await client().from('subjects').select('id,name,slug,description,sort_order').eq('slug', slug).single())
+  const row = check(await client().from('subjects').select('id,name,slug,description,sort_order').eq('slug', slug).eq('is_active', true).single())
   return decorateSubject(row)
 }
 
 export async function getLessonsBySubject(subjectId: string): Promise<Lesson[]> {
-  const rows = check(await client().from('lessons').select('id,subject_id,title,content,sort_order').eq('subject_id', subjectId).order('sort_order'))
+  const rows = check(await client().from('lessons').select('id,subject_id,topic_id,title,content,rule,example,sort_order,overview,objectives,concept_sections,method_steps,worked_examples,common_mistakes,exam_tips,quick_checks,source_links,estimated_minutes').eq('subject_id', subjectId).eq('status', 'published').not('topic_id', 'is', null).order('sort_order'))
   return rows.map(parseLesson)
 }
 
-async function getQuestionsByIds(ids: string[]): Promise<Question[]> {
-  if (!ids.length) return []
-  const rows = check(await client().from('questions')
-    .select('id,subject_id,lesson_id,question_text,explanation,difficulty,question_choices(id,question_id,choice_text,is_correct,sort_order)')
-    .in('id', ids))
-  const byId = new Map(rows.map((row) => [row.id, {
-    ...row, choices: [...(row.question_choices as QuestionChoice[])].sort((a, b) => a.sort_order - b.sort_order),
-  } as Question]))
-  return ids.flatMap((id) => byId.has(id) ? [byId.get(id)!] : [])
+export async function getLessonByTopic(topicId: string): Promise<Lesson> {
+  const row = check(await client().from('lessons').select('id,subject_id,topic_id,title,content,rule,example,sort_order,overview,objectives,concept_sections,method_steps,worked_examples,common_mistakes,exam_tips,quick_checks,source_links,estimated_minutes').eq('topic_id', topicId).eq('status', 'published').single())
+  return parseLesson(row)
 }
 
-export async function getQuestionsForQuiz(subjectId: string): Promise<Question[]> {
-  const rows = check(await client().from('questions').select('id').eq('subject_id', subjectId).order('created_at').limit(10))
-  return getQuestionsByIds(rows.map((row) => row.id))
+export async function getTopicsBySubject(subjectId: string): Promise<Topic[]> {
+  return check(await client().from('topics').select('id,subject_id,slug,title,description,sort_order').eq('subject_id', subjectId).order('sort_order')) as Topic[]
 }
 
-export async function submitQuiz(subjectId: string, answers: Array<{ question_id: string; selected_choice_id: string | null }>): Promise<string> {
-  const attemptId = check(await client().rpc('submit_quiz', { p_subject_id: subjectId, p_answers: answers }))
-  return attemptId as string
+export async function getTopics(): Promise<Topic[]> {
+  return check(await client().from('topics').select('id,subject_id,slug,title,description,sort_order').order('subject_id').order('sort_order')) as Topic[]
+}
+
+export async function startQuizSession(mode: QuizMode, subjectId?: string, topicId?: string): Promise<string> {
+  return check(await client().rpc('start_quiz_session', { p_mode: mode, p_subject_id: subjectId ?? null, p_topic_id: topicId ?? null })) as string
+}
+
+export async function getQuizSession(sessionId: string): Promise<QuizSession> {
+  return check(await client().rpc('get_quiz_session', { p_session_id: sessionId })) as QuizSession
+}
+
+export async function saveQuizDraft(sessionId: string, questionId: string, choiceId: string, lock = false): Promise<PracticeFeedback | { saved: true }> {
+  return check(await client().rpc('save_quiz_draft', { p_session_id: sessionId, p_question_id: questionId, p_choice_id: choiceId, p_lock: lock })) as PracticeFeedback | { saved: true }
+}
+
+export async function submitQuizSession(sessionId: string): Promise<string> {
+  return check(await client().rpc('submit_quiz_session', { p_session_id: sessionId })) as string
 }
 
 export async function getQuizResult(attemptId: string): Promise<QuizResult> {
-  const attempt = check(await client().from('quiz_attempts').select('id,student_id,subject_id,score,total_questions,started_at,completed_at').eq('id', attemptId).single()) as QuizAttempt
-  const answers = check(await client().from('quiz_answers').select('id,attempt_id,question_id,selected_choice_id,is_correct').eq('attempt_id', attemptId)) as QuizAnswer[]
-  const questions = await getQuestionsByIds(answers.map((answer) => answer.question_id))
-  return { attempt, answers, questions }
+  const payload = check(await client().rpc('get_quiz_result', { p_attempt_id: attemptId })) as { attempt: QuizAttempt; questions: QuizResult['questions'] }
+  const answers = payload.questions.map((question) => ({ id: `${attemptId}:${question.id}`, attempt_id: attemptId, question_id: question.id, selected_choice_id: question.selected_choice_id ?? undefined, is_correct: Boolean(question.is_correct) }))
+  return { attempt: payload.attempt, answers, questions: payload.questions }
 }
 
 export async function getStudentProgress(): Promise<StudentProgress[]> {
@@ -84,23 +93,20 @@ export async function getStudentProgress(): Promise<StudentProgress[]> {
   return check(await client().from('student_progress').select('*').eq('student_id', data.user.id)) as StudentProgress[]
 }
 
+export async function getStudentTopicProgress(): Promise<StudentTopicProgress[]> {
+  const { data, error } = await client().auth.getUser()
+  if (error || !data.user) throw new Error('Please sign in again.')
+  return check(await client().from('student_topic_progress').select('*').eq('student_id', data.user.id)) as StudentTopicProgress[]
+}
+
 export async function getRecentAttempts(): Promise<QuizAttempt[]> {
   const { data, error } = await client().auth.getUser()
   if (error || !data.user) throw new Error('Please sign in again.')
   return check(await client().from('quiz_attempts').select('id,student_id,subject_id,score,total_questions,started_at,completed_at').eq('student_id', data.user.id).not('completed_at', 'is', null).order('completed_at', { ascending: false }).limit(10)) as QuizAttempt[]
 }
 
-export async function getMistakes(subjectId?: string): Promise<Array<{ question: Question; answer: QuizAnswer }>> {
-  const { data: userData, error: userError } = await client().auth.getUser()
-  if (userError || !userData.user) throw new Error('Please sign in again.')
-  const attempts = check(await client().from('quiz_attempts').select('id,subject_id').eq('student_id', userData.user.id).not('completed_at', 'is', null))
-  const relevant = subjectId ? attempts.filter((attempt) => attempt.subject_id === subjectId) : attempts
-  if (!relevant.length) return []
-  const answers = check(await client().from('quiz_answers').select('id,attempt_id,question_id,selected_choice_id,is_correct').in('attempt_id', relevant.map((attempt) => attempt.id)).eq('is_correct', false)) as QuizAnswer[]
-  const latest = new Map<string, QuizAnswer>()
-  for (const answer of answers) latest.set(answer.question_id, answer)
-  const questions = await getQuestionsByIds([...latest.keys()])
-  return questions.map((question) => ({ question, answer: latest.get(question.id)! }))
+export async function getMistakes(subjectId?: string): Promise<Array<{ question: QuizResult['questions'][number]; answer: QuizAnswer }>> {
+  return check(await client().rpc('get_mistakes', { p_subject_id: subjectId ?? null })) as Array<{ question: QuizResult['questions'][number]; answer: QuizAnswer }>
 }
 
 export interface AdminStudentSummary extends Profile { accuracy: number; questions_answered: number; last_activity: string | null }

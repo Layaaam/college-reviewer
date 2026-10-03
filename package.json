@@ -10,7 +10,11 @@
     "test": "vitest run --pool=forks --maxWorkers=1 --minWorkers=1",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
+    "generate:content": "node scripts/generate-content.mjs",
     "validate:questions": "node scripts/validate-question-bank.mjs",
+    "seed:content": "npm run generate:content && npm run validate:questions && node scripts/build-content-seed.mjs",
+    "seed:lessons": "npm run generate:content && node scripts/build-lesson-seed.mjs",
+    "audit:corpus": "node scripts/audit-source-corpus.mjs && node scripts/build-corpus-seed.mjs",
     "seed:questions:sql": "npm run validate:questions && node scripts/build-question-seed.mjs",
     "format": "prettier --write ."
   },
